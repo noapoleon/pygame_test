@@ -1,0 +1,26 @@
+name: Test Python Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  my_job:
+    name: do thingy now!
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Run python script
+        run: python test.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: my-tset-artifact
+          path: test.py
+
