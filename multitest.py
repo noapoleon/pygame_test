@@ -30,6 +30,7 @@ def main(width: int, height: int):
         pygame.draw.circle(screen, (0, 200, 255),  (x, y), 10)
 
 
+
         # Update display
         pygame.display.flip()
 
