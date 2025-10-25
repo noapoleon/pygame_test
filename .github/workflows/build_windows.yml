@@ -1,0 +1,33 @@
+name: Test Python Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  windows_build:
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: pyinstaller --onefile pygame_test.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: my_test_artifact
+          path: dist/pygame_test.exe
