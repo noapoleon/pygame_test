@@ -17,7 +17,7 @@ jobs:
       - name: Install build tools
         run: |
           apt-get update
-          apt-get install -y binutils
+          apt-get install -y binutils libffi-dev
 
       - name: Set up python
         uses: actions/setup-python@v6
