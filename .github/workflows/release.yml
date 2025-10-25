@@ -41,7 +41,8 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v6
         with:
-          name: pygame_test.exe
+          name: my_test_artifact
+          path: downloads/
 
       - name: Create GitHub Release
         id: create_release
@@ -54,6 +55,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: pygame_test.exe
+          asset_path: downloads/pygame_test.exe
           asset_name: pygame_test.exe
           asset_content_type: application/octet-steam
