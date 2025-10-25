@@ -24,7 +24,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build with PyInstaller
-        run: python -m pyinstaller --onefile pygame_test.py
+        run: pyinstaller --onefile pygame_test.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
