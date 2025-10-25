@@ -15,7 +15,9 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Install build tools
-        run: sudo apt-get update && sudo apt-get install -y binutils
+        run: |
+          apt-get update
+          apt-get install -y binutils
 
       - name: Set up python
         uses: actions/setup-python@v6
