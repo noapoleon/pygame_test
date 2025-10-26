@@ -42,7 +42,7 @@ def main(width: int, height: int):
         screen.blit(fps_text, (10, 10))
 
         # Limit fps
-        # clock.tick(60)
+        clock.tick(60)
 
         # Update display
         pygame.display.flip()
