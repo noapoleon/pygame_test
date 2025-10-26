@@ -7,7 +7,7 @@ def main(width: int, height: int):
     # init pygame
     pygame.init()
     screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Game Test")
+    pygame.display.set_caption("Websocket Pygame Test")
     font = pygame.font.SysFont(None, 30)
 
     # clock for FPS control
