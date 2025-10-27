@@ -24,13 +24,17 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build with PyInstaller
-        run: pyinstaller --onefile pygame_test.py
+        run: | 
+          pyinstaller --onefile pygame_server.py
+          pyinstaller --onefile pygame_client.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
           name: my_test_artifact
-          path: dist/pygame_test.exe
+          path: |
+            dist/pygame_server.exe
+            dist/pygame_client.exe
 
   release:
     runs-on: ubuntu-latest
@@ -53,12 +57,21 @@ jobs:
           tag_name: ${{ github.ref_name }}
           release_name: ${{ github.ref_name }}
 
-      - name: Upload assets
+      - name: Upload server asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: downloads/pygame_test.exe
-          asset_name: pygame_test.exe
+          asset_path: downloads/pygame_server.exe
+          asset_name: pygame_server.exe
+          asset_content_type: application/octet-steam
+      - name: Upload client asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: downloads/pygame_client.exe
+          asset_name: pygame_client.exe
           asset_content_type: application/octet-steam
