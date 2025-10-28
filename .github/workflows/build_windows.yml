@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -24,10 +29,14 @@ jobs:
           pip install -r requirements.txt
 
       - name: Build with PyInstaller
-        run: pyinstaller --onefile pygame_test.py
+        run: | 
+          pyinstaller --onefile pygame_server.py
+          pyinstaller --onefile pygame_client.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
           name: my_test_artifact
-          path: dist/pygame_test.exe
+          path: |
+            dist/pygame_server.exe
+            dist/pygame_client.exe
