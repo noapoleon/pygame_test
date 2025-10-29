@@ -25,16 +25,16 @@ jobs:
 
       - name: Build with PyInstaller
         run: | 
-          pyinstaller --onefile pygame_server.py
-          pyinstaller --onefile pygame_client.py
+          pyinstaller --onefile pigity_server.py
+          pyinstaller --onefile pigity_client.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: my_test_artifact
+          name: pigity_binaries
           path: |
-            dist/pygame_server.exe
-            dist/pygame_client.exe
+            dist/pigity_server.exe
+            dist/pigity_client.exe
 
   release:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v6
         with:
-          name: my_test_artifact
+          name: pigity_binaries
           path: downloads/
 
       - name: Create GitHub Release
@@ -63,8 +63,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: downloads/pygame_server.exe
-          asset_name: pygame_server.exe
+          asset_path: downloads/pigity_server.exe
+          asset_name: pigity_server.exe
           asset_content_type: application/octet-steam
       - name: Upload client asset
         uses: actions/upload-release-asset@v1
@@ -72,6 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: downloads/pygame_client.exe
-          asset_name: pygame_client.exe
+          asset_path: downloads/pigity_client.exe
+          asset_name: pigity_client.exe
           asset_content_type: application/octet-steam

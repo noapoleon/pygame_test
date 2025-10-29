@@ -1,4 +1,6 @@
 .env
+config
+config.bak
 
 # build stuff
 /build

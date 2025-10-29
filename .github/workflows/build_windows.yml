@@ -30,13 +30,13 @@ jobs:
 
       - name: Build with PyInstaller
         run: | 
-          pyinstaller --onefile pygame_server.py
-          pyinstaller --onefile pygame_client.py
+          pyinstaller --onefile pigity_server.py
+          pyinstaller --onefile pigity_client.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: my_test_artifact
+          name: pigity_binaries
           path: |
-            dist/pygame_server.exe
-            dist/pygame_client.exe
+            dist/pigity_server.exe
+            dist/pigity_client.exe
