@@ -5,14 +5,18 @@ import asyncio
 import websockets
 import json
 import uuid
-import time
+# import time
 
-TICK_RATE = 1/60
+TICK_RATE = 128
+TICK_INTERVAL = 1/TICK_RATE
 clients = {}
 
 async def handle_client(websocket):
+    # init client
     client_id = str(uuid.uuid4())
     clients[client_id] = {"ws": websocket, "x": 0, "y": 0}
+    await websocket.send(json.dumps({"uuid": client_id, "tick_rate": TICK_RATE}))
+    # send client its uuid
     print(f"\033[32mClient joined. Total: {len(clients)}\033[0m")
 
     try:
@@ -38,7 +42,7 @@ async def broadcast_positions():
             snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
             msg = json.dumps(snapshot)
             await asyncio.gather(*[c["ws"].send(msg) for c in clients.values()])
-        await asyncio.sleep(TICK_RATE)
+        await asyncio.sleep(TICK_INTERVAL)
 
 async def main():
     async with websockets.serve(handle_client, "0.0.0.0", 8765):
