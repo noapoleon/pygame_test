@@ -5,15 +5,16 @@ import asyncio
 import websockets
 import json
 import uuid
-# import time
+import time
 
-TICK_RATE = 16
+TICK_RATE = 128
 TICK_INTERVAL = 1/TICK_RATE
 clients = {}
 lock = asyncio.Lock
 
 async def handle_client(websocket):
     # init client
+    print(type(websocket))
     client_id = str(uuid.uuid4())
     clients[client_id] = {"ws": websocket, "x": 0, "y": 0}
     await websocket.send(json.dumps({"uuid": client_id, "tick_rate": TICK_RATE}))
@@ -38,23 +39,33 @@ async def handle_client(websocket):
         print(f"\033[31mClient left. Total: {len(clients)}\033[0m")
 
 async def broadcast_positions():
+    async def safe_send(client: dict, message: str) -> None:
+        try:
+            await client["ws"].send(message)
+        except Exception as e:
+            print(f"Broadcast loop client error: {e}")
+
+
+    next_tick = time.perf_counter()
     while True:
         if clients:
-            # TODO: lock during snapshot creation maybe? if key gets removed by handle_client could cause issues
-            snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
-            msg = json.dumps(snapshot)
+            try:
+                # TODO: lock during snapshot creation maybe? if key gets removed by handle_client could cause issues
+                snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
+                msg = json.dumps(snapshot)
 
-            # for cid, client in clients.items():
+                await asyncio.gather(*(safe_send(c, msg) for c in clients.values()))
+            except Exception as e:
+                print(f"Broadcast loop error: {e}")
 
-            await asyncio.gather(*[c["ws"].send(msg) for c in clients.values()])
-        await asyncio.sleep(TICK_INTERVAL)
-# async def broadcast_positions():
-#     while True:
-#         if clients:
-#             snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
-#             msg = json.dumps(snapshot)
-#             await asyncio.gather(*[c["ws"].send(msg) for c in clients.values()])
-#         await asyncio.sleep(TICK_INTERVAL)
+        # sleep to match tick rate
+        next_tick += TICK_INTERVAL
+        delay = next_tick - time.perf_counter()
+        if delay > 0:
+            await asyncio.sleep(delay)
+        else:
+            next_tick = time.perf_counter()
+
 
 async def main():
     async with websockets.serve(handle_client, "0.0.0.0", 8765):
