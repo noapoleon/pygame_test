@@ -5,6 +5,7 @@
 	- [ ] singleplayer?
 	- [ ] servers:
 		- [ ] history file, remembers successful connections
+- [ ] tps viewer
 
 ## Server
 - [ ] config file
@@ -12,11 +13,13 @@
 	- [ ] host
 	- [ ] port
 	- [ ] tls support ("wss://")
+- [ ] default config if no config file found
 
 
 ## Game
 	- [ ] world with random tiles
 	- [ ] name? Pigity (PyGame Test -> PGT)
+    - [ ] air hockey mode
 	
 
 ## Auth

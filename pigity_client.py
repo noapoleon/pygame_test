@@ -5,6 +5,7 @@ import pygame
 import asyncio
 import websockets
 import json
+import time
 
 TICK_RATE = 128
 TICK_INTERVAL = 1/TICK_RATE
@@ -38,12 +39,19 @@ async def main():
 
 
         pygame.init()
+        pygame.font.init()
+        font = pygame.font.SysFont(None, 30)
         screen = pygame.display.set_mode((800, 600))
         clock = pygame.time.Clock()
 
         players = {}
         players_lock = asyncio.Lock()
         x, y = 0, 0
+
+        # tps
+        last_tps_calc = time.time()
+        msg_count = 0
+        tps_server = 0.0
 
         async def send_position():
             nonlocal x, y
@@ -62,6 +70,15 @@ async def main():
             nonlocal players
             async for message in ws:
                 players = json.loads(message)
+                msg_count += 1
+
+                # tps
+                now = time.time()
+                if now - last_tps_calc >= 1.0: # once per second
+                    tps_server = msg_count
+                    last_tps_calc = now
+
+
 
         asyncio.create_task(send_position())
         asyncio.create_task(receive_positions())
@@ -88,6 +105,10 @@ async def main():
             # for cid, pos in snapshot.items():
                 if cid != client_uuid:
                     pygame.draw.circle(screen, (255, 0, 0), (pos["x"], pos["y"]), 15)
+
+            # stats
+            tps_text = font.render(f"TPS: {tps_server}", True, (255, 255, 255))
+            screen.blit(tps_text, (10, 10))
 
             pygame.display.flip()
             await asyncio.sleep(0)

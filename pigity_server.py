@@ -7,9 +7,10 @@ import json
 import uuid
 # import time
 
-TICK_RATE = 128
+TICK_RATE = 16
 TICK_INTERVAL = 1/TICK_RATE
 clients = {}
+lock = asyncio.Lock
 
 async def handle_client(websocket):
     # init client
@@ -39,10 +40,21 @@ async def handle_client(websocket):
 async def broadcast_positions():
     while True:
         if clients:
+            # TODO: lock during snapshot creation maybe? if key gets removed by handle_client could cause issues
             snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
             msg = json.dumps(snapshot)
+
+            # for cid, client in clients.items():
+
             await asyncio.gather(*[c["ws"].send(msg) for c in clients.values()])
         await asyncio.sleep(TICK_INTERVAL)
+# async def broadcast_positions():
+#     while True:
+#         if clients:
+#             snapshot = {cid: {"x": c["x"], "y": c["y"]} for cid, c in clients.items()}
+#             msg = json.dumps(snapshot)
+#             await asyncio.gather(*[c["ws"].send(msg) for c in clients.values()])
+#         await asyncio.sleep(TICK_INTERVAL)
 
 async def main():
     async with websockets.serve(handle_client, "0.0.0.0", 8765):
