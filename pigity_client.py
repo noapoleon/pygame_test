@@ -68,6 +68,7 @@ async def main():
 
         async def receive_positions():
             nonlocal players
+            nonlocal tps_server, msg_count, last_tps_calc
             async for message in ws:
                 players = json.loads(message)
                 msg_count += 1
@@ -75,7 +76,8 @@ async def main():
                 # tps
                 now = time.time()
                 if now - last_tps_calc >= 1.0: # once per second
-                    tps_server = msg_count
+                    tps_server = msg_count / (now - last_tps_calc)
+                    msg_count = 0
                     last_tps_calc = now
 
 
@@ -107,7 +109,7 @@ async def main():
                     pygame.draw.circle(screen, (255, 0, 0), (pos["x"], pos["y"]), 15)
 
             # stats
-            tps_text = font.render(f"TPS: {tps_server}", True, (255, 255, 255))
+            tps_text = font.render(f"TPS: {round(tps_server, 1)}", True, (255, 255, 255))
             screen.blit(tps_text, (10, 10))
 
             pygame.display.flip()
